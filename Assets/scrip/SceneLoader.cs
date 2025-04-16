@@ -6,7 +6,7 @@ public class SceneLoader : MonoBehaviour
 
     public void LoadMatch()
     {
-        SceneManager.LoadScene("Match");
+        SceneManager.LoadScene("Game");
     }
 
     public void LoadMainMenu()
