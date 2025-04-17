@@ -115,6 +115,21 @@ public class GameManager : NetworkBehaviour
         Debug.Log("Game Restarted");
     }
 
+    public void Respawn()
+    {
+        GetPlayers();
+
+        foreach (GameObject player in players)
+        {
+            Rigidbody rb = player.GetComponentInChildren<Rigidbody>();
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            player.transform.position = spawnPoints[Random.Range(0, spawnPoints.Length)].transform.localPosition;
+        }
+
+        Debug.Log("Respawned");
+    }
+
     private void GetPlayers()
     {
         players.Clear();
@@ -143,9 +158,10 @@ public class GameManager : NetworkBehaviour
 
         if (IsServer)
         {
-            timmy = Instantiate(preGameTimer, canvas.transform);
+            timmy = Instantiate(preGameTimer, preGameTimer.transform.localPosition, Quaternion.identity, canvas.transform);
             timmy.GetComponent<NetworkObject>().Spawn();
             timmy.transform.SetParent(canvas.transform);
+            timmy.transform.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -170, 0);
         }
 
     }
@@ -155,9 +171,10 @@ public class GameManager : NetworkBehaviour
     {
         if (IsServer)
         {
-            playTime = Instantiate(gameTimer, canvas.transform);
+            playTime = Instantiate(gameTimer, gameTimer.transform.localPosition, Quaternion.identity, canvas.transform);
             playTime.GetComponent<NetworkObject>().Spawn();
             playTime.transform.SetParent(canvas.transform);
+            gameTimer.transform.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -170, 0);
         }
 
     }
@@ -167,9 +184,10 @@ public class GameManager : NetworkBehaviour
     {
         if (IsServer)
         {
-            endTimer = Instantiate(postGameTimer, canvas.transform);
+            endTimer = Instantiate(postGameTimer, endTimer.transform.localPosition, Quaternion.identity, canvas.transform);
             endTimer.GetComponent<NetworkObject>().Spawn();
             endTimer.transform.SetParent(canvas.transform);
+            endTimer.transform.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -170, 0);
         }
     }
 
