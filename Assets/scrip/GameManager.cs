@@ -229,7 +229,7 @@ public class GameManager : NetworkBehaviour
     {
         if (IsServer)
         {
-            endTimer = Instantiate(postGameTimer, endTimer.transform.localPosition, Quaternion.identity, canvas.transform);
+            endTimer = Instantiate(postGameTimer, postGameTimer.transform.localPosition, Quaternion.identity, canvas.transform);
             endTimer.GetComponent<NetworkObject>().Spawn();
             endTimer.transform.SetParent(canvas.transform);
             endTimer.transform.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -170, 0);

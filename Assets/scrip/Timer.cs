@@ -1,6 +1,6 @@
-using UnityEngine;
-using Unity.Netcode;
 using TMPro;
+using Unity.Netcode;
+using UnityEngine;
 
 public class Timer : NetworkBehaviour
 {
@@ -76,6 +76,11 @@ public class Timer : NetworkBehaviour
         if (IsServer)
         {
             Clock.Value = 20;
+
+            if (gameInProgress == true) 
+            {
+                Clock.Value = 180; 
+            }
         }
     }
 

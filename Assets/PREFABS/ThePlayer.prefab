@@ -31,8 +31,8 @@ Transform:
   m_GameObject: {fileID: 52328782156288226}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.713, y: 15.97, z: 9.426}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.72322, y: 15.972, z: 9.3853}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8462963104864681984}
@@ -54,6 +54,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  healthBar: {fileID: 0}
+  maxHealth: 100
   gm: {fileID: 0}
 --- !u!114 &8592936956160993826
 MonoBehaviour:
@@ -182,12 +184,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca9c89c249340534a8f49f6f96ca7c13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 6
-  sprintSpeed: 10
+  ShowTopMostFoldoutHeaderGroup: 1
+  walkSpeed: 5
+  sprintSpeed: 8
   groundDrag: 4
-  jumpForce: 9
+  jumpForce: 8
   jumpCooldown: 1
-  airMultiplier: 0.3
+  airMultiplier: 0.2
   crouchSpeed: 3.5
   crouchYScale: 0.5
   jumpKey: 32
