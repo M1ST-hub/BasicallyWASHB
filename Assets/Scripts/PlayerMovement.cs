@@ -1,7 +1,8 @@
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
     [Header("Movement")]
     private float moveSpeed;
@@ -55,33 +56,41 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
+        if (IsOwner)
+        {
+            rb = GetComponent<Rigidbody>();
+            rb.freezeRotation = true;
 
-        readyToJump = true;
+            readyToJump = true;
 
-        startYScale = transform.localScale.y;
+            startYScale = transform.localScale.y;
+        }
     }
 
     private void Update()
     {
+        if (IsOwner)
+        {
+            grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 2.5f, whatIsGround);
 
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 2.5f, whatIsGround);
+            MyInput();
 
-        MyInput();
-     
-        StateHandler();
+            StateHandler();
 
-        if (grounded)
-            rb.linearDamping = groundDrag;
-        else
-            rb.linearDamping = 0;
+            if (grounded)
+                rb.linearDamping = groundDrag;
+            else
+                rb.linearDamping = 0;
+        }
     }
 
     private void FixedUpdate()
     {
-        MovePlayer();
-        SpeedControl();
+        if (IsOwner)
+        {
+            MovePlayer();
+            SpeedControl();
+        }
     }
 
     private void MyInput()
@@ -115,28 +124,30 @@ public class PlayerMovement : MonoBehaviour
 
     private void StateHandler()
     {
-        
-        if (Input.GetKey(crouchKey))
+        if (IsOwner)
         {
-            state = MovementState.crouching;
-            moveSpeed = crouchSpeed;
-        }
-        
-        if (grounded && Input.GetKey(sprintKey))
-        {
-            state = MovementState.sprinting;
-            moveSpeed = sprintSpeed;
-        }
+            if (Input.GetKey(crouchKey))
+            {
+                state = MovementState.crouching;
+                moveSpeed = crouchSpeed;
+            }
 
-        else if(grounded)
-        {
-            state = MovementState.walking;
-            moveSpeed = walkSpeed;
-        }
+            if (grounded && Input.GetKey(sprintKey))
+            {
+                state = MovementState.sprinting;
+                moveSpeed = sprintSpeed;
+            }
 
-        else
-        {
-            state = MovementState.air;
+            else if (grounded)
+            {
+                state = MovementState.walking;
+                moveSpeed = walkSpeed;
+            }
+
+            else
+            {
+                state = MovementState.air;
+            }
         }
 
 
@@ -219,131 +230,5 @@ public class PlayerMovement : MonoBehaviour
     {
         return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

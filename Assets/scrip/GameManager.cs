@@ -21,7 +21,7 @@ public class GameManager : NetworkBehaviour
     private GameObject playTime;
     private GameObject endTimer;
 
-    //private PlayerController playerController;
+    //public PlayerMovement pc;
     public static GameManager Instance { get; private set; }
 
     private void Awake()
@@ -52,14 +52,29 @@ public class GameManager : NetworkBehaviour
     [Rpc(SendTo.Everyone)]
     public void GameStartRpc()
     {
+        if (!IsServer) return; // Only the server should control position changes
+
         GetPlayers();
 
         foreach (GameObject player in players)
         {
             Rigidbody rb = player.GetComponentInChildren<Rigidbody>();
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-            player.transform.position = spawnPoints[Random.Range(0, spawnPoints.Length)].transform.localPosition;
+            if (rb != null)
+            {
+                // Stop momentum
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+
+            // Safe spawn with a slight upward offset to ensure grounded check will work
+            Vector3 spawnPosition = spawnPoints[Random.Range(0, spawnPoints.Length)].transform.position + Vector3.up * 1f;
+            player.transform.position = spawnPosition;
+
+            // Reset rotation if needed
+            player.transform.rotation = Quaternion.identity;
+
+            // Optional debug
+            Debug.Log($"Spawned {player.name} at {spawnPosition}");
         }
 
         //Destroy(timmy);
@@ -76,14 +91,29 @@ public class GameManager : NetworkBehaviour
     [Rpc(SendTo.Everyone)]
     public void GameEndRpc()
     {
+        if (!IsServer) return; // Only the server should control position changes
+
         GetPlayers();
 
         foreach (GameObject player in players)
         {
             Rigidbody rb = player.GetComponentInChildren<Rigidbody>();
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-            player.transform.position = endPoints[Random.Range(0, endPoints.Length)].transform.localPosition;
+            if (rb != null)
+            {
+                // Stop momentum
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+
+            // Safe spawn with a slight upward offset to ensure grounded check will work
+            Vector3 endPosition = endPoints[Random.Range(0, spawnPoints.Length)].transform.position + Vector3.up * 1f;
+            player.transform.position = endPosition;
+
+            // Reset rotation if needed
+            player.transform.rotation = Quaternion.identity;
+
+            // Optional debug
+            Debug.Log($"Spawned {player.name} at {endPosition}");
         }
 
         //Destroy(playTime);
@@ -96,14 +126,29 @@ public class GameManager : NetworkBehaviour
     [Rpc(SendTo.Everyone)]
     public void GameRestartRpc()
     {
+        if (!IsServer) return; // Only the server should control position changes
+
         GetPlayers();
 
         foreach (GameObject player in players)
         {
             Rigidbody rb = player.GetComponentInChildren<Rigidbody>();
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-            player.transform.position = restartPoints[Random.Range(0, restartPoints.Length)].transform.localPosition;
+            if (rb != null)
+            {
+                // Stop momentum
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+
+            // Safe spawn with a slight upward offset to ensure grounded check will work
+            Vector3 restartPosition = endPoints[Random.Range(0, spawnPoints.Length)].transform.position + Vector3.up * 1f;
+            player.transform.position = restartPosition;
+
+            // Reset rotation if needed
+            player.transform.rotation = Quaternion.identity;
+
+            // Optional debug
+            Debug.Log($"Spawned {player.name} at {restartPosition}");
         }
 
         //Destroy(endTimer);
@@ -174,7 +219,7 @@ public class GameManager : NetworkBehaviour
             playTime = Instantiate(gameTimer, gameTimer.transform.localPosition, Quaternion.identity, canvas.transform);
             playTime.GetComponent<NetworkObject>().Spawn();
             playTime.transform.SetParent(canvas.transform);
-            gameTimer.transform.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -170, 0);
+            playTime.transform.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -170, 0);
         }
 
     }
