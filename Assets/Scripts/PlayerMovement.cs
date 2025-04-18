@@ -1,5 +1,4 @@
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : NetworkBehaviour
@@ -56,45 +55,60 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Start()
     {
+        if (!IsOwner)
+            return;
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
+
+        readyToJump = true;
+
+        startYScale = transform.localScale.y;
+    }
+
+    // Called when the object is spawned in the network
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn(); // Always call the base method first!
+
         if (IsOwner)
         {
-            rb = GetComponent<Rigidbody>();
-            rb.freezeRotation = true;
-
-            readyToJump = true;
-
-            startYScale = transform.localScale.y;
+            Debug.Log("I am the owner, enabling movement for this player.", gameObject);
+            // Put any initialization or input handling logic here for the owner player
+        }
+        else
+        {
+            Debug.Log("This is a remote player, disabling input for this player.", gameObject);
+            // You can disable input or handle remote player logic here
         }
     }
 
     private void Update()
     {
-        if (IsOwner)
-        {
-            grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 2.5f, whatIsGround);
+        if (!IsOwner)
+            return;
+        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 2.5f, whatIsGround);
 
-            MyInput();
+        MyInput();
 
-            StateHandler();
+        StateHandler();
 
-            if (grounded)
-                rb.linearDamping = groundDrag;
-            else
-                rb.linearDamping = 0;
-        }
+        if (grounded)
+            rb.linearDamping = 0;//groundDrag;
+        else
+            rb.linearDamping = 0;
     }
 
     private void FixedUpdate()
     {
-        if (IsOwner)
-        {
-            MovePlayer();
-            SpeedControl();
-        }
+        if (!IsOwner)
+            return;
+        MovePlayer();
+        SpeedControl();
     }
 
     private void MyInput()
     {
+        Debug.Log($"IsOwner: {IsOwner}", gameObject);
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
@@ -109,7 +123,7 @@ public class PlayerMovement : NetworkBehaviour
         }
 
 
-        if(Input.GetKeyDown(crouchKey))
+        if (Input.GetKeyDown(crouchKey))
         {
             transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
             rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
@@ -124,31 +138,31 @@ public class PlayerMovement : NetworkBehaviour
 
     private void StateHandler()
     {
-        if (IsOwner)
+        if (!IsOwner)
+            return;
+        if (Input.GetKey(crouchKey))
         {
-            if (Input.GetKey(crouchKey))
-            {
-                state = MovementState.crouching;
-                moveSpeed = crouchSpeed;
-            }
-
-            if (grounded && Input.GetKey(sprintKey))
-            {
-                state = MovementState.sprinting;
-                moveSpeed = sprintSpeed;
-            }
-
-            else if (grounded)
-            {
-                state = MovementState.walking;
-                moveSpeed = walkSpeed;
-            }
-
-            else
-            {
-                state = MovementState.air;
-            }
+            state = MovementState.crouching;
+            moveSpeed = crouchSpeed;
         }
+
+        if (grounded && Input.GetKey(sprintKey))
+        {
+            state = MovementState.sprinting;
+            moveSpeed = sprintSpeed;
+        }
+
+        else if (grounded)
+        {
+            state = MovementState.walking;
+            moveSpeed = walkSpeed;
+        }
+
+        else
+        {
+            state = MovementState.air;
+        }
+
 
 
     }
@@ -166,11 +180,11 @@ public class PlayerMovement : NetworkBehaviour
                 rb.AddForce(Vector3.down * 80f, ForceMode.Force);
         }
 
-        if(grounded)
-        rb.AddForce(moveDirection.normalized *  moveSpeed * 10f, ForceMode.Force);
-    
-    
-    else if(!grounded)
+        if (grounded)
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+
+
+        else if (!grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
 
 
@@ -216,14 +230,14 @@ public class PlayerMovement : NetworkBehaviour
 
     private bool OnSlope()
     {
-        if(Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 2.5f))
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 2.5f))
         {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < maxSlopeAngle && angle != 0;
         }
-                
+
         return false;
-                
+
     }
 
     private Vector3 GetSlopeMoveDirection()

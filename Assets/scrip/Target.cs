@@ -55,6 +55,6 @@ public class Target : MonoBehaviour
 
     public void Die()
     {
-        gm.Respawn();
+        gm.Respawn(this.gameObject);
     }
 }

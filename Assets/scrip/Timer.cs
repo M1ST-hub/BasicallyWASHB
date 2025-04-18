@@ -81,6 +81,10 @@ public class Timer : NetworkBehaviour
             {
                 Clock.Value = 180; 
             }
+            else if (gameEnd == true)
+            {
+                Clock.Value = 5;
+            }
         }
     }
 
