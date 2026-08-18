@@ -167,7 +167,7 @@ public class PlayerMovement : NetworkBehaviour
 
     }
 
-
+    //[Rpc(SendTo.Everyone)]
     private void MovePlayer()
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
