@@ -86,11 +86,12 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (!IsOwner)
             return;
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 2.5f, whatIsGround);
+        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f, whatIsGround);
 
         MyInput();
 
         StateHandler();
+
 
         if (grounded)
             rb.linearDamping = 0;//groundDrag;
@@ -116,7 +117,7 @@ public class PlayerMovement : NetworkBehaviour
         if (Input.GetKey(jumpKey) && readyToJump && grounded)
         {
             readyToJump = false;
-
+            grounded = false;
             Jump();
 
             Invoke(nameof(ResetJump), jumpCooldown);
@@ -163,8 +164,6 @@ public class PlayerMovement : NetworkBehaviour
             state = MovementState.air;
         }
 
-
-
     }
 
     //[Rpc(SendTo.Everyone)]
@@ -176,7 +175,7 @@ public class PlayerMovement : NetworkBehaviour
         {
             rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
 
-            if (rb.linearVelocity.y > 0)
+            if (rb.linearVelocity.y > 0 && grounded && state != MovementState.air)
                 rb.AddForce(Vector3.down * 80f, ForceMode.Force);
         }
 
