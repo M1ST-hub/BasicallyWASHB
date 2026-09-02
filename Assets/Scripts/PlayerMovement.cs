@@ -114,13 +114,13 @@ public class PlayerMovement : NetworkBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
 
 
-        if (Input.GetKey(jumpKey) && readyToJump && grounded)
+        if (Input.GetKeyDown(jumpKey) && grounded)
         {
             readyToJump = false;
             grounded = false;
             Jump();
 
-            Invoke(nameof(ResetJump), jumpCooldown);
+            //Invoke(nameof(ResetJump), jumpCooldown);
         }
 
 
@@ -229,7 +229,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private bool OnSlope()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 2.5f))
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 2.5f) && state != MovementState.air)
         {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < maxSlopeAngle && angle != 0;
