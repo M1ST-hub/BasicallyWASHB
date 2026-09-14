@@ -160,25 +160,9 @@ public class GameManager : NetworkBehaviour
         Debug.Log("Game Restarted");
     }
 
-    public void Respawn(GameObject player)
-    {
-        Rigidbody rb = player.GetComponentInChildren<Rigidbody>();
-        if (rb != null)
-        {
-            // Stop momentum
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
 
-        // Safe spawn with a slight upward offset to ensure grounded check will work
-        Vector3 restartPosition = spawnPoints[Random.Range(0, spawnPoints.Length)].transform.position + Vector3.up * 1f;
-        player.transform.position = restartPosition;
 
-        // Reset rotation if needed
-        player.transform.rotation = Quaternion.identity;
-
-        Debug.Log("Respawned");
-    }
+  
 
     private void GetPlayers()
     {

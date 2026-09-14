@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -18,6 +19,7 @@ public class Bullet : MonoBehaviour
         }
     }
 
+    [Rpc(SendTo.Everyone)]
     public void ShootBullet()
     {
         RaycastHit hit;
@@ -26,6 +28,8 @@ public class Bullet : MonoBehaviour
             Debug.Log(hit.transform.name);
 
             Target target = hit.transform.GetComponent<Target>();
+
+
             if (target != null)
             {
                 target.TakeDamage(damage);

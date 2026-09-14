@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class Target : MonoBehaviour
@@ -39,6 +40,7 @@ public class Target : MonoBehaviour
         }
     }
 
+    [Rpc(SendTo.Everyone)a
     public void TakeDamage(int amount)
     {
         health -= amount;
@@ -55,6 +57,6 @@ public class Target : MonoBehaviour
 
     public void Die()
     {
-        gm.Respawn(this.gameObject);
+        Player.Respawn(this.gameObject);
     }
 }
