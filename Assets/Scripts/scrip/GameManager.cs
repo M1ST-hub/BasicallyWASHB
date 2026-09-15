@@ -21,6 +21,26 @@ public class GameManager : NetworkBehaviour
     private GameObject playTime;
     private GameObject endTimer;
 
+    public enum  GameMode
+    {
+       TeamDeathmatch,
+       CaptureTheFlag,
+       KingOfTheHill
+    }
+
+    
+
+    public enum TeamColor
+    {
+        Red,
+        Blue,
+        Green,
+        Yellow
+    }
+
+    
+
+
     //public PlayerMovement pc;
     public static GameManager Instance { get; private set; }
 
@@ -52,10 +72,11 @@ public class GameManager : NetworkBehaviour
     [Rpc(SendTo.Everyone)]
     public void GameStartRpc()
     {
-        if (!IsServer) return; // Only the server should control position changes
+        //if (!IsServer) return; // Only the server should control position changes
 
         GetPlayers();
 
+        int colorIndex = 0; // Start with the first color
         foreach (GameObject player in players)
         {
             Rigidbody rb = player.GetComponentInChildren<Rigidbody>();
@@ -66,6 +87,10 @@ public class GameManager : NetworkBehaviour
                 rb.angularVelocity = Vector3.zero;
             }
 
+            player.GetComponent<Target>().currentGameMode = GameMode.TeamDeathmatch; // Set the game mode for the player
+            player.GetComponent<Target>().currentTeamColor = (TeamColor)colorIndex; // Set the team color for the player
+            colorIndex = (colorIndex + 1) % System.Enum.GetValues(typeof(TeamColor)).Length; // Move to the next color
+
             // Safe spawn with a slight upward offset to ensure grounded check will work
             Vector3 spawnPosition = spawnPoints[Random.Range(0, spawnPoints.Length)].transform.position + Vector3.up * 1f;
             player.transform.position = spawnPosition;
@@ -75,6 +100,8 @@ public class GameManager : NetworkBehaviour
 
             // Optional debug
             Debug.Log($"Spawned {player.name} at {spawnPosition}");
+
+            Debug.Log("Set player spawn position to: " + spawnPosition);
         }
 
         //Destroy(timmy);

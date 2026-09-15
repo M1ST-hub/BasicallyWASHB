@@ -32,7 +32,7 @@ public class Bullet : MonoBehaviour
 
             if (target != null)
             {
-                target.TakeDamage(damage);
+                target.TakeDamageRpc(damage);
             }
         }
         

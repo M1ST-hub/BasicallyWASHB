@@ -1,12 +1,15 @@
 using Unity.Netcode;
 using UnityEngine;
+using static GameManager;
 
-public class Target : MonoBehaviour
+public class Target : NetworkBehaviour
 {
     public int health;
     public HealthBar healthBar; // Reference to the HealthBar script
     public int maxHealth = 100; // Maximum health
     public GameManager gm;
+    public GameMode currentGameMode;
+    public TeamColor currentTeamColor;
 
 
     private void OnEnable()
@@ -40,9 +43,15 @@ public class Target : MonoBehaviour
         }
     }
 
-    [Rpc(SendTo.Everyone)a
-    public void TakeDamage(int amount)
+    [Rpc(SendTo.Everyone)]
+    public void TakeDamageRpc(int amount)
     {
+
+        if (Timer.gameStart == false)
+        {
+            return; // Ignore damage if the game hasn't started
+        }
+
         health -= amount;
         health = Mathf.Clamp(health, 0, maxHealth); // Clamp health between 0 and max
         if (healthBar != null)
@@ -55,8 +64,30 @@ public class Target : MonoBehaviour
         }
     }
 
+    public void Respawn(GameObject player)
+    {
+        Rigidbody rb = player.GetComponentInChildren<Rigidbody>();
+        if (rb != null)
+        {
+            // Stop momentum
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        // Safe spawn with a slight upward offset to ensure grounded check will work
+        Vector3 restartPosition = GameManager.Instance.spawnPoints[Random.Range(0, GameManager.Instance.spawnPoints.Length)].transform.position + Vector3.up * 1f;
+        player.transform.position = restartPosition;
+
+        // Reset rotation if needed
+        player.transform.rotation = Quaternion.identity;
+
+        Debug.Log("Respawned");
+    }
+
+
+    
     public void Die()
     {
-        Player.Respawn(this.gameObject);
+         Respawn(this.gameObject);
     }
 }
