@@ -6,9 +6,13 @@ using UnityEngine;
 public class GameManager : NetworkBehaviour
 {
     public List<GameObject> players;
-    public GameObject[] spawnPoints;
+    public GameObject[] redSpawns;
+    public GameObject[] blueSpawns;
+    public GameObject[] yellowSpawns;
+    public GameObject[] greenSpawns;
     public GameObject[] endPoints;
-    public GameObject[] restartPoints;
+    
+
 
     [Header("Timers")]
     public GameObject gameTimer;
@@ -25,10 +29,9 @@ public class GameManager : NetworkBehaviour
     {
        TeamDeathmatch,
        CaptureTheFlag,
-       KingOfTheHill
+       KingOfTheHill,
+       Dual
     }
-
-    
 
     public enum TeamColor
     {
@@ -37,8 +40,6 @@ public class GameManager : NetworkBehaviour
         Green,
         Yellow
     }
-
-    
 
 
     //public PlayerMovement pc;
@@ -87,13 +88,33 @@ public class GameManager : NetworkBehaviour
                 rb.angularVelocity = Vector3.zero;
             }
 
-            player.GetComponent<Target>().currentGameMode = GameMode.TeamDeathmatch; // Set the game mode for the player
+            Debug.Log(player, player);
+
+            player.GetComponent<Target>().currentGameMode = GameMode.Dual; // Set the game mode for the player
             player.GetComponent<Target>().currentTeamColor = (TeamColor)colorIndex; // Set the team color for the player
             colorIndex = (colorIndex + 1) % System.Enum.GetValues(typeof(TeamColor)).Length; // Move to the next color
 
-            // Safe spawn with a slight upward offset to ensure grounded check will work
-            Vector3 spawnPosition = spawnPoints[Random.Range(0, spawnPoints.Length)].transform.position + Vector3.up * 1f;
-            player.transform.position = spawnPosition;
+            Vector3 spawnPosition = Vector3.zero; // Default spawn position
+
+            if (colorIndex == (int)TeamColor.Red)
+            {
+                 spawnPosition = redSpawns[Random.Range(0, redSpawns.Length)].transform.position + Vector3.up * 1f;
+            }
+            else if (colorIndex == (int)TeamColor.Blue)
+            {
+                 spawnPosition = blueSpawns[Random.Range(0, blueSpawns.Length)].transform.position + Vector3.up * 1f;
+            }
+            else if (colorIndex == (int)TeamColor.Green)
+            {
+                 spawnPosition = greenSpawns[Random.Range(0, greenSpawns.Length)].transform.position + Vector3.up * 1f;
+            }
+            else if (colorIndex == (int)TeamColor.Yellow)
+            {
+                 spawnPosition = yellowSpawns[Random.Range(0, yellowSpawns.Length)].transform.position + Vector3.up * 1f;
+                // Safe spawn with a slight upward offset to ensure grounded check will work
+            }
+                player.transform.position = spawnPosition;
+
 
             // Reset rotation if needed
             player.transform.rotation = Quaternion.identity;
@@ -133,7 +154,7 @@ public class GameManager : NetworkBehaviour
             }
 
             // Safe spawn with a slight upward offset to ensure grounded check will work
-            Vector3 endPosition = endPoints[Random.Range(0, spawnPoints.Length)].transform.position + Vector3.up * 1f;
+            Vector3 endPosition = endPoints[Random.Range(0, endPoints.Length)].transform.position + Vector3.up * 1f;
             player.transform.position = endPosition;
 
             // Reset rotation if needed
@@ -168,7 +189,7 @@ public class GameManager : NetworkBehaviour
             }
 
             // Safe spawn with a slight upward offset to ensure grounded check will work
-            Vector3 restartPosition = endPoints[Random.Range(0, spawnPoints.Length)].transform.position + Vector3.up * 1f;
+            Vector3 restartPosition = endPoints[Random.Range(0, endPoints.Length)].transform.position + Vector3.up * 1f;
             player.transform.position = restartPosition;
 
             // Reset rotation if needed

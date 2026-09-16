@@ -10,6 +10,7 @@ public class Target : NetworkBehaviour
     public GameManager gm;
     public GameMode currentGameMode;
     public TeamColor currentTeamColor;
+    
 
 
     private void OnEnable()
@@ -75,7 +76,7 @@ public class Target : NetworkBehaviour
         }
 
         // Safe spawn with a slight upward offset to ensure grounded check will work
-        Vector3 restartPosition = GameManager.Instance.spawnPoints[Random.Range(0, GameManager.Instance.spawnPoints.Length)].transform.position + Vector3.up * 1f;
+        Vector3 restartPosition = GameManager.Instance.endPoints[Random.Range(0, GameManager.Instance.endPoints.Length)].transform.position + Vector3.up * 1f;
         player.transform.position = restartPosition;
 
         // Reset rotation if needed
