@@ -109,7 +109,6 @@ public class PlayerMovement : NetworkBehaviour
 
     private void MyInput()
     {
-        Debug.Log($"IsOwner: {IsOwner}", gameObject);
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 

@@ -73,13 +73,19 @@ public class GameManager : NetworkBehaviour
     [Rpc(SendTo.Everyone)]
     public void GameStartRpc()
     {
-        //if (!IsServer) return; // Only the server should control position changes
+
+        Debug.Log(IsServer);
+
+        if (!IsServer) return; // Only the server should control position changes
 
         GetPlayers();
 
         int colorIndex = 0; // Start with the first color
         foreach (GameObject player in players)
         {
+
+            //if (!player.GetComponent<NetworkObject>().IsOwner) continue;
+
             Rigidbody rb = player.GetComponentInChildren<Rigidbody>();
             if (rb != null)
             {
@@ -120,7 +126,7 @@ public class GameManager : NetworkBehaviour
             player.transform.rotation = Quaternion.identity;
 
             // Optional debug
-            Debug.Log($"Spawned {player.name} at {spawnPosition}");
+            Debug.Log($"Spawned {player.name} at {player.transform.localPosition}");
 
             Debug.Log("Set player spawn position to: " + spawnPosition);
         }
