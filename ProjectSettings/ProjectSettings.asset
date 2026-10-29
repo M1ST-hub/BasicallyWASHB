@@ -931,11 +931,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 0d8c171f-446d-4c9a-98fe-0ccc3a3582fa
+  cloudProjectId: 5190c317-12f6-4e42-a396-1e89ccfdd874
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 1st Game v2
-  organizationId: woahm1st
+  projectName: BasicallyWASHB
+  organizationId: ajfirefox
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

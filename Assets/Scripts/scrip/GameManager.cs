@@ -74,7 +74,6 @@ public class GameManager : NetworkBehaviour
     public void GameStartRpc()
     {
 
-        Debug.Log(IsServer);
 
         if (!IsServer) return; // Only the server should control position changes
 
@@ -119,14 +118,19 @@ public class GameManager : NetworkBehaviour
                  spawnPosition = yellowSpawns[Random.Range(0, yellowSpawns.Length)].transform.position + Vector3.up * 1f;
                 // Safe spawn with a slight upward offset to ensure grounded check will work
             }
-                player.transform.position = spawnPosition;
+                
 
+            if(player.GetComponent<NetworkObject>().IsOwner)
+            {
+                player.transform.position = spawnPosition;
+                player.transform.rotation = Quaternion.identity;
+            }
 
             // Reset rotation if needed
-            player.transform.rotation = Quaternion.identity;
+           
 
             // Optional debug
-            Debug.Log($"Spawned {player.name} at {player.transform.localPosition}");
+            Debug.Log($"Spawned {player.name} at {player.transform.localPosition}, Team: {colorIndex}");
 
             Debug.Log("Set player spawn position to: " + spawnPosition);
         }
@@ -224,6 +228,7 @@ public class GameManager : NetworkBehaviour
         foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
         {
             players.Add(client.PlayerObject.gameObject);
+            Debug.Log ("Added player: " + client.PlayerObject.gameObject.name);
         }
     }
 
